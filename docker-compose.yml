@@ -1,0 +1,96 @@
+version: "3.9"
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-odr_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-odr_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-odr_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  tei:
+    image: ghcr.io/huggingface/text-embeddings-inference:1.5
+    restart: unless-stopped
+    environment:
+      MODEL_ID: ${TEI_MODEL_ID:-BAAI/bge-m3}
+      HF_HUB_ENABLE_TELEMETRY: "0"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  llama:
+    image: ghcr.io/ggerganov/llama.cpp:server
+    command: >
+      --host 0.0.0.0
+      --port 8080
+      --api-server
+      --model ${LLAMA_MODEL_PATH:-/models/phi-2.Q4_K_M.gguf}
+      --ctx-size ${LLAMA_CTX_SIZE:-4096}
+      --parallel ${LLAMA_PARALLEL:-2}
+    volumes:
+      - ./models:/models
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-odr_user}:${POSTGRES_PASSWORD:-odr_pass}@postgres:5432/${POSTGRES_DB:-odr_db}
+      TEI_BASE_URL: http://tei:8080
+      LLAMA_BASE_URL: http://llama:8080/v1
+      FILES_DIR: /app/data/uploads
+      HOST: 0.0.0.0
+      PORT: 5000
+      CORS_ORIGINS: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_started
+      tei:
+        condition: service_healthy
+      llama:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      API_BASE: http://localhost:5000
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  pgdata:

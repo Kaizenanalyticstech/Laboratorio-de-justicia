@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API</title>
+</head>
+<body>
+    <h1>Test API</h1>
+    
+    <h2>Health Check</h2>
+    <button onclick="testHealth()">Test Health</button>
+    <div id="healthResult"></div>
+    
+    <h2>Upload Test</h2>
+    <input type="file" id="testFile" accept="application/pdf">
+    <button onclick="testUpload()">Test Upload</button>
+    <div id="uploadResult"></div>
+    
+    <h2>Chat Test</h2>
+    <input type="text" id="testQuery" placeholder="Test question">
+    <button onclick="testChat()">Test Chat</button>
+    <div id="chatResult"></div>
+
+    <script>
+        const apiBase = 'http://localhost:5000';
+        
+        async function testHealth() {
+            try {
+                const response = await fetch(apiBase + '/health');
+                const data = await response.json();
+                document.getElementById('healthResult').innerHTML = 
+                    `<p>Status: ${response.status}</p><p>Data: ${JSON.stringify(data)}</p>`;
+            } catch (error) {
+                document.getElementById('healthResult').innerHTML = 
+                    `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testUpload() {
+            const file = document.getElementById('testFile').files[0];
+            if (!file) {
+                alert('Selecciona un archivo');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch(apiBase + '/ingest', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                document.getElementById('uploadResult').innerHTML = 
+                    `<p>Status: ${response.status}</p><p>Data: ${JSON.stringify(data)}</p>`;
+            } catch (error) {
+                document.getElementById('uploadResult').innerHTML = 
+                    `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testChat() {
+            const query = document.getElementById('testQuery').value;
+            if (!query) {
+                alert('Escribe una pregunta');
+                return;
+            }
+            
+            try {
+                const response = await fetch(apiBase + '/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const data = await response.json();
+                document.getElementById('chatResult').innerHTML = 
+                    `<p>Status: ${response.status}</p><p>Data: ${JSON.stringify(data)}</p>`;
+            } catch (error) {
+                document.getElementById('chatResult').innerHTML = 
+                    `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

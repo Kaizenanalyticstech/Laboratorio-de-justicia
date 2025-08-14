@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODR Chatbot - Asistente Legal Inteligente</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-balance-scale"></i>
+                    <h1>ODR Chatbot</h1>
+                </div>
+                <p class="subtitle">Asistente Legal Inteligente con IA</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-file-upload"></i>
+                        <h2>Subir Documento Legal</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="ingestForm" class="upload-form">
+                            <div class="file-input-wrapper">
+                                <input type="file" id="pdfFile" accept="application/pdf" required />
+                                <label for="pdfFile" class="file-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Seleccionar archivo PDF</span>
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload"></i>
+                                Subir e Indexar Documento
+                            </button>
+                        </form>
+                        <div id="ingestResult" class="result-message"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chat Section -->
+            <section class="chat-section">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-comments"></i>
+                        <h2>Asistente Legal</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="chatBox" class="chat-box">
+                            <div class="welcome-message">
+                                <i class="fas fa-robot"></i>
+                                <h3>¡Hola! Soy tu asistente legal</h3>
+                                <p>Sube un documento PDF y podré ayudarte con preguntas sobre su contenido legal.</p>
+                            </div>
+                        </div>
+                        <form id="chatForm" class="chat-form">
+                            <div class="input-group">
+                                <input type="text" id="query" placeholder="Escribe tu pregunta legal..." required />
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="tech-stack">
+                    <span class="tech-item">
+                        <i class="fas fa-database"></i>
+                        PostgreSQL + pgvector
+                    </span>
+                    <span class="tech-item">
+                        <i class="fas fa-brain"></i>
+                        Llama.cpp
+                    </span>
+                    <span class="tech-item">
+                        <i class="fas fa-cogs"></i>
+                        TEI
+                    </span>
+                </div>
+                <p class="footer-text">Sistema autoalojado • 100% Privado • Sin cuotas</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

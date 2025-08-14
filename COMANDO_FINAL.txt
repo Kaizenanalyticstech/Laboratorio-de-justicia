@@ -1,0 +1,16 @@
+COMANDO PARA EJECUTAR DESPUES DE INSTALAR DOCKER:
+
+powershell -ExecutionPolicy Bypass -File setup_simple.ps1
+
+Este comando:
+- Configurara todo automaticamente
+- Descargara el modelo (o usara version sin LLM)
+- Levantara todos los servicios
+- Te dara acceso a http://localhost:3000
+
+PASOS:
+1. Instala Docker Desktop desde: https://www.docker.com/products/docker-desktop/
+2. Reinicia tu computadora
+3. Abre Docker Desktop y espera a que inicie
+4. Ejecuta el comando de arriba
+5. Abre http://localhost:3000 en tu navegador
